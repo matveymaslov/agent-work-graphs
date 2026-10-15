@@ -47,10 +47,10 @@ const Q = [
     'Процесс агента НЕ может прочитать ключ, которым принимается работа?',
     'Run agents as a separate OS user with no access to acceptance keys — or one day work accepts itself.',
     'Запускайте агентов отдельным пользователем без доступа к ключам приёмки — иначе работа однажды примет себя сама.'],
-  ['isolation', 'Is the agent UNABLE to write anything a human or the system will later execute (hooks, configs, scripts)?',
-    'Агент НЕ может записать то, что потом исполнит человек или система (хуки, конфиги, скрипты)?',
-    'Isolation is not "a separate user" — it is a user who cannot write what others run.',
-    'Изоляция — это не «отдельный пользователь», а пользователь, который не может писать то, что исполняют другие.'],
+  ['isolation', 'Is the agent UNABLE to quietly change trusted settings, checks or tooling through which unreviewed code would run with someone else\'s privileges?',
+    'Агент НЕ может незаметно изменить доверенные настройки, проверки или инструменты, через которые непроверенный код исполнится с чужими правами?',
+    'Isolation is not "a separate user" — it is a user who cannot alter hooks, repository config, checks or shared tooling that others run.',
+    'Изоляция — это не «отдельный пользователь», а пользователь, который не может менять хуки, конфиг репозитория, проверки и общие инструменты, которые запускают другие.'],
   ['signals', 'Does the screen show what is in the event log, rather than a status field?',
     'Показывает ли экран то, что записано в журнале событий, а не поле «статус»?',
     'Derive every status from the log; a status field drifts from reality.',
@@ -128,12 +128,16 @@ const T = {
     verdictLow: 'Fewer than ten "yes": a list of statuses, not a graph.',
     verdictMid: 'A graph exists, but it does not hold the work without you yet.',
     verdictHigh: 'A real graph. Keep turning every failure into a mechanism.',
+    critical: 'CRITICAL — work can accept itself or be silently corrupted; no other «yes» makes up for questions:',
+    heuristic: '(Score bands are a rough author heuristic, not a standard. «Not checked» counts as «no».)',
     read: 'Why each item matters: README.md, section 3 and 4.' },
   ru: { title: 'Самопроверка графа работы — 20 вопросов (y/n)', ask: '[y/n] ', score: 'Счёт', level: 'Уровень',
     holes: 'Где работа может пройти молча и что сделать:', none: 'Дыр нет. Теперь докажите это живьём, несколько раз подряд.',
     verdictLow: 'Меньше десяти «да»: это список статусов, а не граф.',
     verdictMid: 'Граф есть, но он ещё не держит работу без вас.',
     verdictHigh: 'Настоящий граф. Продолжайте превращать каждую поломку в механизм.',
+    critical: 'КРИТИЧНО — работа может принять себя сама или тихо испортиться; другие «да» этого не перекрывают. Вопросы:',
+    heuristic: '(Пороги счёта — грубая авторская эвристика, не стандарт. «Не проверено» считается как «нет».)',
     read: 'Почему каждый пункт важен: README.ru.md, разделы 3 и 4.' },
 }
 
@@ -176,10 +180,16 @@ if (given !== null) {
 const yes = answers.filter(Boolean).length
 let level = 0
 if (yes > 0) for (let l = 1; l < NEEDS.length; l++) if (NEEDS[l].every((n) => answers[n - 1])) level = l
+// Critical conditions are not averaged away: a «no» on any of them caps the level, whatever the score.
+const CRITICAL = [2, 3, 8, 9]
+const brokenCritical = CRITICAL.filter((n) => !answers[n - 1])
+if (brokenCritical.length && level > 1) level = 1
 
 console.log(`\n${t.score}: ${yes}/${Q.length}`)
 console.log(`${t.level}: ${LEVELS[lang][level]}`)
-console.log(yes < 10 ? t.verdictLow : yes < 15 ? t.verdictMid : t.verdictHigh)
+if (brokenCritical.length) console.log(`${t.critical} ${brokenCritical.join(', ')}`)
+if (!brokenCritical.length) console.log(yes < 10 ? t.verdictLow : yes < 15 ? t.verdictMid : t.verdictHigh)
+console.log(t.heuristic)
 const holes = Q.map((q, i) => [i + 1, q]).filter(([n]) => !answers[n - 1])
 console.log('\n' + (holes.length ? t.holes : t.none))
 for (const [n, q] of holes) console.log(`  ${String(n).padStart(2)}. ${fix(q)}`)

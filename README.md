@@ -42,7 +42,7 @@ A work graph is a **multiplier of your ability to verify**. It takes everything 
 ### One silent error costs more than ten successes
 Trust is asymmetric. Ten correctly done tasks do not build trust. **One** task that was "done, tests green" and quietly broke something next to it destroys it completely. After that you go back to checking every step, and autonomy is dead.
 
-So what matters is not the agent's average accuracy but **the guarantee that an error never passes silently**. An agent that is wrong 20% of the time but always loudly is more useful than one that is wrong 2% of the time but quietly. A graph turns quiet errors into loud ones.
+So what matters is not only the agent's average accuracy but **that the errors you know how to check for can never pass silently**. An agent that fails loudly is often more useful than one that fails rarely but quietly — a loud failure costs a retry, a quiet one costs everything built on top of it. A graph cannot catch every kind of error; it makes the checks you defined mandatory, records why work was accepted, and turns the known classes of failure into loud ones. The residual risk depends on how complete your criteria and checks are.
 
 ### Errors compound — and so do lessons
 An agent builds the next piece of work on the result of the previous one. If the previous one was unverified, the error does not just stay — it becomes the foundation. A month later you find a three-week-old break with twenty pieces of work resting on it.
@@ -137,8 +137,8 @@ Answer honestly. Every "no" is a place where work can pass silently. (Or run `no
 5. Does every attempt work in its own copy, from a known state?
 6. Are the base and the list of changes in the log — including failed attempts?
 7. Can any piece of work be rolled back in one action?
-8. Can the agent's process read the key that accepts work? (The right answer is no.)
-9. Can the agent write anything that a human or the system will later execute on their own behalf? (The right answer is no.)
+8. Is the agent's process **unable** to read the key that accepts work?
+9. Is the agent **unable** to quietly change trusted settings, checks or tooling through which unreviewed code would run with someone else's privileges?
 
 **Honest signals**
 10. Does the screen show what is in the log, rather than a `status` field?
@@ -146,26 +146,26 @@ Answer honestly. Every "no" is a place where work can pass silently. (Or run `no
 12. Is there a test that proves the connection between parts, not each part alone?
 13. Are your test doubles checked against recordings of what the real thing does?
 14. Does the system tell "the agent asked a question" apart from "the agent delivered"?
-15. What does the system do with unmeasured spend — count it as zero, or say "not measured"?
+15. Is unmeasured spend (and an unchecked outcome) shown as "not measured" rather than counted as zero or success?
 
 **Control**
 16. Do pause, stop and correction work at task, batch and phase level — and survive a restart?
 17. Does the system wake you when work stalls — or do you find out in the morning?
-18. Can an agent postpone a finding "for later" without your word?
+18. Is an agent **unable** to postpone a finding or change the scope of the work without your word?
 19. Does every failure found become a check that prevents it from happening again?
 20. Has the whole path — request to acceptance — been walked live several times in a row without a slip?
 
-Fewer than ten "yes" — you have a list of statuses, not a graph. Fewer than fifteen — you have a graph, but it does not yet hold the work without you.
+Questions **2, 3, 8 and 9 are critical**: a "no" on any of them means work can accept itself or be silently corrupted, and no number of other "yes" answers makes up for it. Beyond that, our rough rule of thumb (an author's heuristic, not a standard): fewer than ten "yes" — a list of statuses rather than a graph; fewer than fifteen — a graph that does not yet hold the work without you. "Not checked" counts as "no".
 
 ### The maturity ladder
 - **Level 0. Chat.** The agent does, you read everything. No autonomy, but no illusions either.
 - **Level 1. Statuses.** "In progress / done", set by the agent. The most dangerous level: the illusion of control.
 - **Level 2. Gates.** Human acceptance and tests as a condition. Errors get caught, but dead wires and fakes slip through.
-- **Level 3. Evidence.** Every "done" carries a receipt, the doer is not the checker, work is isolated and reversible. Here you can leave for the night.
+- **Level 3. Evidence.** Every "done" carries a receipt, the doer is not the checker, work is isolated and reversible. This is where we started leaving work running overnight.
 - **Level 4. Three scales.** Task, batch and phase with their own gates, shared budget, pause and stop at every level.
 - **Level 5. Self-learning.** Every failure becomes a mechanism, red turns into a task by itself and goes down the same road. The system improves itself and you accept the reports.
 
-Most off-the-shelf solutions today are at level 1, sometimes 2. We spent six weeks going from 2 to 4 and are just starting 5.
+This ladder is our own model, not a market rating. In the tools and setups we have seen, statuses and an approve button are common; that alone does not show they are wired into a checked end-to-end process. We spent six weeks going from 2 to 4 and are just starting 5.
 
 ---
 
@@ -210,7 +210,7 @@ After the phase we took every wall apart and grouped them. Almost no wall was un
 *What helped:* a finding is fixed now, with a test; a deferral without the owner's word and date **keeps the checks red** — a mechanism, not a request.
 
 **13. The phase was too big.** Ninety-two plans in one phase. One plan went through six review rounds in 7 hours while 75 others waited. Seams between parallel plans cost ten hours of untangling.
-*What helped:* no more than 20 plans per part, no more than two review rounds, then land.
+*What helped:* no more than 20 plans per part and a cap on review rounds; when the cap is reached — escalate, cut scope or stop. Landing only after the mandatory criteria hold, never automatically because a limit was hit.
 
 **14. Lessons did not reach the doer.** Lessons were written, but we never measured whether they reached the agent. The measurement: one path — 0 of 35, another — 1 of 20. The lesson about the dangerous removal was in a note and in the instructions — and still repeated.
 *What helped:* measure memory delivery **per path**, and turn lessons into mechanisms.
@@ -281,7 +281,7 @@ This is not a two-day job. You can grasp the idea in an evening; a graph that ho
 6. **A test stand and rehearsals.** A test database and a cheap agent double for rehearsals; an offline route audit before every live run.
 7. **Batches and phases on top of the task**, once the task has gone live several times in a row without a slip.
 8. **Classes of failure from day one.** Each class gets a mechanism.
-9. **An attention budget for proof.** Plan two to three times more time for proving than for building. That is not caution — it is our actual ratio.
+9. **An attention budget for proof.** In our case proving took far longer than building (the code was mostly written in the first week of a 41-day phase). Plan for that explicitly instead of hoping it will be quick.
 
 ---
 
