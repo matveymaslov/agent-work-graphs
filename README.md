@@ -283,6 +283,8 @@ This is not a two-day job. You can grasp the idea in an evening; a graph that ho
 8. **Classes of failure from day one.** Each class gets a mechanism.
 9. **An attention budget for proof.** In our case proving took far longer than building (the code was mostly written in the first week of a 41-day phase). Plan for that explicitly instead of hoping it will be quick.
 
+**A runnable starting point.** [`example/`](example) is a small offline work loop you can run in a minute: contract → isolated attempt → check → bound receipt → explicit acceptance → integration, with a journal that resumes interrupted work. No packages, no model calls, no network; Node.js 22+ and Git. It is the minimal version of the task graph from step 2.
+
 ---
 
 ## 9. Why everyone should do this
