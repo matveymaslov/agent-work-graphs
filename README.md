@@ -24,6 +24,8 @@ We thought graphs were a three-week job. Here is how it went:
 
 The most important line in that table: **we wrote the code almost on schedule.** Half the plans were done in five days. Writing was not the expensive part — **proving that it works** was. Every remaining week went there.
 
+![Writing the code was not the expensive part, proving it was: the code was mostly written in week 1 of 41 days (the plan was 17), and 40 of 46 builds were for verification runs, only 6 landed](figures/fig1-proving-was-the-job.png)
+
 If you are reading this thinking "we have a graph, built it in two days" — read on to the section about primitive graphs.
 
 ---
@@ -102,6 +104,8 @@ At any moment a graph answers four questions:
 - **Batch** — many tasks with one goal: waves by dependency, a shared budget; the human releases a wave and accepts the batch with one decision.
 - **Phase** — a large stage: discussion → plan → design → execution in batches → verification → **lessons**. A phase is not closed until what it taught has been turned into a mechanism.
 
+![Every piece of work walks a predefined road and moves on only with proof: the stages of a task, a batch and a phase, with a person deciding the contract, the acceptance, the release of a wave and the acceptance of a batch](figures/fig2-the-road.png)
+
 ---
 
 ## 3. Why a primitive graph is more dangerous than none
@@ -123,6 +127,8 @@ What such a graph usually lacks — and each of these holes cost us days:
 | Spend is whatever the agent reported | Unknown spend is not zero — it is an honest "not measured" | The verification reserve was never reconciled with what was spent; the cost of delivered work was unknown for weeks |
 
 A primitive graph looks great in a demo. It breaks exactly at the moment you stop watching — which is the very moment it was built for.
+
+![A status field is not a graph: seven things a primitive graph usually lacks, and what is actually needed instead](figures/fig3-a-status-field-is-not-a-graph.png)
 
 ### Check your graph: 20 questions
 Answer honestly. Every "no" is a place where work can pass silently. (Or run `node assess/assess.mjs`.)
@@ -167,6 +173,8 @@ Questions **2, 3, 8 and 9 are critical**: a "no" on any of them means work can a
 
 This ladder is our own model, not a market rating. In the tools and setups we have seen, statuses and an approve button are common; that alone does not show they are wired into a checked end-to-end process. We spent six weeks going from 2 to 4 and are just starting 5.
 
+![The maturity ladder from chat (0) to self-learning (5): six weeks took us from level 2 to level 4, and level 5 is just starting](figures/fig4-maturity-ladder.png)
+
 ---
 
 ## 4. Fifteen classes of pain
@@ -187,6 +195,8 @@ After the phase we took every wall apart and grouped them. Almost no wall was un
 
 **5. One machine for everything → false reds.** Under load tests fail with timeouts and pass alone. Three suites in parallel — 6 to 14 false reds. A neighbouring window with compilers killed the test database twice. An OS update rebooted the machine at night and killed a run. A full 14,000-test suite once gave 7 reds — all of them load, not one real.
 *What helped:* heavy runs strictly one at a time, under a lock; a red is **first run alone**, and only then judged "load or real"; part of the work moved to a separate server.
+
+![A red is not yet a bug: at one landing 49 of 52 reds came from an interface not built in the copy, and in one full run of about 14,000 tests all 7 reds were load](figures/fig5-a-red-is-not-yet-a-bug.png)
 
 **6. Subscriptions, limits, logins.** A session limit cut a swarm of seven agents at once. The weekly subscription limit stopped runs in the middle of a round. For two days there was no subscription at all. A login copied to the server burned the laptop's token refresh chain.
 *What helped:* a gate "is the rest of the week enough" before every step; a spend ceiling; a separate login on every machine.
@@ -214,6 +224,8 @@ After the phase we took every wall apart and grouped them. Almost no wall was un
 
 **14. Lessons did not reach the doer.** Lessons were written, but we never measured whether they reached the agent. The measurement: one path — 0 of 35, another — 1 of 20. The lesson about the dangerous removal was in a note and in the instructions — and still repeated.
 *What helped:* measure memory delivery **per path**, and turn lessons into mechanisms.
+
+![We wrote the lessons down, and almost none reached the agent: 0 of 35 on one delivery path, 1 of 20 on another](figures/fig6-lessons-did-not-arrive.png)
 
 **15. Landing.** The run was green, but the main branch had moved on meanwhile. The UI was not built in the copy — 49 of 52 reds were only that. Five full-suite runs for one build.
 *What helped:* landing is one command that syncs branches, builds everything, runs, checks and only then merges.
@@ -267,6 +279,8 @@ If a human is asked to confirm what could have been measured, they stop reading 
 
 The human always has three buttons at every level — task, batch, phase: **pause** (at a safe boundary), **stop** (with rollback of the unfinished), **correction** (a word to running work). All three survive a system restart.
 
+![A person decides where values decide: what counts as a result, direction and taste, money, irreversible actions, final acceptance. A machine checks tests, conformance to the contract, copy boundaries and budget. Pause, stop and correction work at every level](figures/fig7-who-decides.png)
+
 ---
 
 ## 8. How to build it yourself
@@ -284,6 +298,8 @@ This is not a two-day job. You can grasp the idea in an evening; a graph that ho
 9. **An attention budget for proof.** In our case proving took far longer than building (the code was mostly written in the first week of a 41-day phase). Plan for that explicitly instead of hoping it will be quick.
 
 **A runnable starting point.** [`example/`](example) is a small offline work loop you can run in a minute: contract → isolated attempt → check → bound receipt → explicit acceptance → integration, with a journal that resumes interrupted work. No packages, no model calls, no network; Node.js 22+ and Git. It is the minimal version of the task graph from step 2.
+
+![The minimal work loop in example/: in the demo a guard stops the work five times, a killed run resumes without repeating its saved step, and only a pass that still matches is accepted and integrated](figures/fig8-minimal-work-loop.png)
 
 ---
 
