@@ -39,8 +39,8 @@ Result: {"total":5}
 
 ## Walk through the commands
 
-Use a new, empty `./example-run` directory name. Commands are individual commands,
-not shell pipelines; continue after the refusals marked below.
+Use a new, empty directory for the run, here `./example-run`. Run each command on
+its own; they are not shell pipelines. Continue after the refusals marked below.
 
 ```text
 node cli.mjs init ./example-run
@@ -87,7 +87,7 @@ Integration refuses with a request to re-check. `advance-target` is a teaching
 aid: it creates an empty commit on the target, representing another actor. Even
 the same tree at a different commit invalidates the old integration basis.
 There is no automatic rebase: use a fresh attempt from the new target and check
-that attempt. Use it to try a real interruption:
+that attempt. Use that fresh attempt to try a real interruption:
 
 ```text
 node cli.mjs start ./example-run resumed good
@@ -114,7 +114,7 @@ node cli.mjs run ./example-run overreach
 ```
 
 The worker requests a decision; the controller rejects the request. Only the
-`accept` command implements decision creation.
+`accept` command can create a decision.
 
 ## What the evidence binds
 
